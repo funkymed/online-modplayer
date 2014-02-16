@@ -49,33 +49,33 @@
             <ul class="well nav nav-list uploaded"></ul>
         </div>
         <div class="span6">
-                <div class="controls">
-                    <div class="btn-toolbar">
-                        <div class="btn-group">
-                            <a class="btn btn-mini" href="#" data-action="play"><i class="icon-play "></i>&nbsp;</a>
-                            <a class="btn btn-mini" href="#" data-action="pause"><i class="icon-pause "></i>&nbsp;</a>
-                            <a class="btn btn-mini" href="#" data-action="stop"><i class="icon-stop "></i>&nbsp;</a>
+            <div class="controls">
+                <div class="btn-toolbar">
+                    <div class="btn-group">
+                        <a class="btn btn-mini" href="#" data-action="play"><i class="icon-play "></i>&nbsp;</a>
+                        <a class="btn btn-mini" href="#" data-action="pause"><i class="icon-pause "></i>&nbsp;</a>
+                        <a class="btn btn-mini" href="#" data-action="stop"><i class="icon-stop "></i>&nbsp;</a>
                             <span class="btn btn-mini fileinput-button">
                                 <i class="icon-eject "></i> Upload
                                 <input id="fileupload" type="file" name="file" />
                             </span>
-                        </div>
-                        <div class=" btn-group options">
-                            <a class="btn btn-mini btn-info" href="#" data-action="patterns" title="toggle Patterns"><i class="icon-eye-open icon-white"></i> P</a>
-                            <a class="btn btn-mini btn-info" href="#" data-action="analyzer" title="toggle Analyzer"><i class="icon-eye-open icon-white"></i> A</a>
-                            <a class="btn btn-mini btn-info" href="#" data-action="samples" title="toggle Samples"><i class="icon-eye-open icon-white"></i> S</a>
-                            <a class="btn btn-mini btn-warning" href="#" data-action="FX" title="toggle FX"><i class="icon-eye-close icon-white"></i> FX</a>
-                        </div>
+                    </div>
+                    <div class=" btn-group options">
+                        <a class="btn btn-mini btn-info" href="#" data-action="patterns" title="toggle Patterns"><i class="icon-eye-open icon-white"></i> P</a>
+                        <a class="btn btn-mini btn-info" href="#" data-action="analyzer" title="toggle Analyzer"><i class="icon-eye-open icon-white"></i> A</a>
+                        <a class="btn btn-mini btn-info" href="#" data-action="samples" title="toggle Samples"><i class="icon-eye-open icon-white"></i> S</a>
+                        <a class="btn btn-mini btn-warning" href="#" data-action="FX" title="toggle FX"><i class="icon-eye-close icon-white"></i> FX</a>
                     </div>
                 </div>
-                <div id="modtimer" class="insetText text-center">
-                    <span class="">pos</span> <span id="pos" class="up hl">00</span>/<span class="songlen hl">00</span>
-                    <span class="">row</span> <span id="row" class="up hl">00</span>/<span class="hl">64</span>
-                    <span class="">speed</span> <span id="speed" class="up hl">00</span>
-                    <span class="">bpm</span> <span id="bpm" class="up hl">00</span>
-                </div>
-                <div id="modpattern" class="screen row-fluid"></div>
-                <canvas id="canvas" class="screen row-fluid"></canvas>
+            </div>
+            <div id="modtimer" class="insetText text-center">
+                <span class="">pos</span> <span id="pos" class="up hl">00</span>/<span class="songlen hl">00</span>
+                <span class="">row</span> <span id="row" class="up hl">00</span>/<span class="hl">64</span>
+                <span class="">speed</span> <span id="speed" class="up hl">00</span>
+                <span class="">bpm</span> <span id="bpm" class="up hl">00</span>
+            </div>
+            <div id="modpattern" class="screen row-fluid"></div>
+            <canvas id="canvas" class="screen row-fluid"></canvas>
         </div>
         <div class="span3">
             <div class="screen" id="modsamples"></div>

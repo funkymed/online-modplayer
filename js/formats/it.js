@@ -6,7 +6,7 @@ Protracker.prototype.parseIT = function()
   if (!this.buffer) return false;
 
   var data = {
-    id:            {start:0,length:4,decode:true}
+     id:            {start:0,length:4,decode:true}
     ,name:          {start:4,length:27,decode:true}
     ,nbOrder:       {start:32,length:1}
     ,nbInstruments: {start:34,length:1}
@@ -23,8 +23,8 @@ Protracker.prototype.parseIT = function()
     ,sep:           {start:52,length:1}
     ,MsgLgth:       {start:54,length:1}
     ,MessageOffset: {start:56,length:4}
-    //,ChnlPan:       {start:61,lengthData:64}
-    //,ChnlVol:       {start:61,lengthData:64}
+    ,ChnlPan:       {start:61,lengthData:64}
+    ,ChnlVol:       {start:61,lengthData:64}
     ,patternOrder:  {start:192,lengthData:'nbOrder'}
   };
 
@@ -32,7 +32,7 @@ Protracker.prototype.parseIT = function()
   {
     var s   = data[d];
     var r   = '';
-    var a   = new Array();
+    var a   = [];
     var len = s.lengthData ? parseInt(data[s.lengthData]) : s.length;
 
     for(i=0;i<len;i++)
@@ -52,7 +52,8 @@ Protracker.prototype.parseIT = function()
     data[d]=r;
   }
 
-  console.debug('not yet ready to play');
+  console.debug('== working in progress ==');
+  console.debug('== debug ==');
   console.debug(data);
   this.stop();
   return false;
@@ -75,7 +76,6 @@ Protracker.prototype.parseIT = function()
           (" ");
       j++;
     }
-
 
     console.log(i,this.sample[i].name);
 

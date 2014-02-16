@@ -185,6 +185,7 @@ modplayer.prototype = {
   selectTune:function(e)
   {
     e.preventDefault();
+
     $(e.target).blur();
     this.select(e.target);
     this.load($(e.target).data('filename'));

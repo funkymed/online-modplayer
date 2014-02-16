@@ -430,13 +430,15 @@ Protracker.prototype.parse = function()
 
   if(this.signature=='IT')
   {
-    this.parseIT();
+    return this.parseIT();
   }else if(this.signature=='XM')
   {
-    this.parseXM();
+    return this.parseXM();
   }else{
-    this.parseMOD();
+    return this.parseMOD();
   }
+
+  return false;
 
 };
 

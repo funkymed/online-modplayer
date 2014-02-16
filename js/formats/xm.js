@@ -65,7 +65,6 @@ Protracker.prototype.parseXM = function()
   var o = 80+parseInt(data.songlen);
   data.restart = this.buffer[o];
 
-  console.debug('not yet ready');
   console.debug(data);
   this.stop();
   return true;
