@@ -294,11 +294,11 @@ _modplayer.prototype = {
     var thisFrameTime = (this.thisLoop=new Date) - this.lastLoop;
     this.frameTime+= (thisFrameTime - this.frameTime) / this.filterStrength;
     this.lastLoop = this.thisLoop;
-    this.fps = (1000/this.frameTime).toFixed(1);
+    this.fps = (1000/this.frameTime).toFixed(0);
   },
   viewFPS:function()
   {
-    fpsOut.innerHTML = (1000/(this ? this.frameTime : 0)).toFixed(0) + " fps";
+    fpsOut.innerHTML = this.fps + " fps";
     setTimeout($.proxy(this.viewFPS, this), 400);
   },
   loop:function()
