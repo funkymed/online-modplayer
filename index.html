@@ -1,0 +1,109 @@
+<html>
+<head>
+    <title>Modplayer online in javascript</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-responsive.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.fileupload-ui-noscript.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery.fileupload-ui.css" type="text/css" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta property="og:title" content="Modplayer online in javascript"/>
+    <meta property="og:description" content="You can play online your good old modules with this javascript player. Work only on Safari and Chrome. Not sure it works on mobile."/>
+    <meta property="og:image" content="http://www.cyrilpereira.com/modplayer/img/pattern.png"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <script>
+        /***
+         *                       .___      .__
+         *      _____   ____   __| _/_____ |  | _____  ___.__. ___________
+         *     /     \ /  _ \ / __ |\____ \|  | \__  \<   |  |/ __ \_  __ \
+         *    |  Y Y  (  <_> ) /_/ ||  |_> >  |__/ __ \\___  \  ___/|  | \/
+         *    |__|_|  /\____/\____ ||   __/|____(____  / ____|\___  >__|
+         *       ___\/            \/|__|   .___      \/\/  .__    \/
+         *      /     \ _____    ____    __| _/____ _______|__| ____   ____
+         *     /  \ /  \\__  \  /    \  / __ |\__  \\_  __ \  |/    \_/ __ \
+         *    /    Y    \/ __ \|   |  \/ /_/ | / __ \|  | \/  |   |  \  ___/
+         *    \____|__  (____  /___|  /\____ |(____  /__|  |__|___|  /\___  >
+         *            \/     \/     \/      \/     \/              \/     \/
+         */
+    </script>
+</head>
+<body>
+<div id="fps"></div>
+<div  id="loader"><img src="img/ajax-loader.gif" /></div>
+<div class="container">
+    <div class="row-fluid text-center">
+        <h1 class="blockTitle"><span class="title">Mod</span><span class="titlePlayer">Player</span><span class="titleJS">JS</span> <span class="insetText mandarine">by mandarine</span></h1>
+    </div>
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="row-fluid">
+                <div class="span4">
+                    <a class="btn btn-mini btnrefresh " href="#"><i class=" icon-refresh"></i> Refresh</a>
+                </div>
+                <div class="span8">
+                    <div id="progressbar" class="progress progress-striped active">
+                        <div class="bar" style="width:100%;"></div>
+                    </div>
+                </div>
+            </div>
+            <ul class="well nav nav-list uploaded"></ul>
+        </div>
+        <div class="span6">
+                <div class="controls">
+                    <div class="btn-toolbar">
+                        <div class="btn-group">
+                            <a class="btn btn-mini" href="#" data-action="play"><i class="icon-play "></i>&nbsp;</a>
+                            <a class="btn btn-mini" href="#" data-action="pause"><i class="icon-pause "></i>&nbsp;</a>
+                            <a class="btn btn-mini" href="#" data-action="stop"><i class="icon-stop "></i>&nbsp;</a>
+                            <span class="btn btn-mini fileinput-button">
+                                <i class="icon-eject "></i> Upload
+                                <input id="fileupload" type="file" name="file" />
+                            </span>
+                        </div>
+                        <div class=" btn-group options">
+                            <a class="btn btn-mini btn-info" href="#" data-action="patterns" title="toggle Patterns"><i class="icon-eye-open icon-white"></i> P</a>
+                            <a class="btn btn-mini btn-info" href="#" data-action="analyzer" title="toggle Analyzer"><i class="icon-eye-open icon-white"></i> A</a>
+                            <a class="btn btn-mini btn-info" href="#" data-action="samples" title="toggle Samples"><i class="icon-eye-open icon-white"></i> S</a>
+                            <a class="btn btn-mini btn-warning" href="#" data-action="FX" title="toggle FX"><i class="icon-eye-close icon-white"></i> FX</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="modtimer" class="insetText text-center">
+                    <span class="">pos</span> <span id="pos" class="up hl">00</span>/<span class="songlen hl">00</span>
+                    <span class="">row</span> <span id="row" class="up hl">00</span>/<span class="hl">64</span>
+                    <span class="">speed</span> <span id="speed" class="up hl">00</span>
+                    <span class="">bpm</span> <span id="bpm" class="up hl">00</span>
+                </div>
+                <div id="modpattern" class="screen row-fluid"></div>
+                <canvas id="canvas" class="screen row-fluid"></canvas>
+        </div>
+        <div class="span3">
+            <div class="screen" id="modsamples"></div>
+        </div>
+    </div>
+</div>
+<div id="footer" class="row-fluid">
+    <p class="text-center footertext insetText">Protracker routine player by <a href="http://tda.haxor.fi/" target="_blank">Jani Halme</a> with his authorization</p>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script type="text/javascript" src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/ui.js"></script>
+<script type="text/javascript" src="js/pt.js"></script>
+<script src="js/jquery.ui.widget.js"></script>
+<script src="js/jquery.iframe-transport.js"></script>
+<script src="js/jquery.fileupload.js"></script>
+<script src="js/jquery.fileupload-ui.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-944839-15']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+</script>
+</body>
+</html>
