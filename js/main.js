@@ -8,11 +8,16 @@
  *  - controler
  *  - design
  */
-var _modplayer = function()
+var modplayer = function()
 {
   this.initialize();
+  var scope = this;
+  $(window).on('hashchange',function(){
+    var u = scope.getURLParameter();
+    scope.loadFile(u);
+  });
 };
-_modplayer.prototype = {
+modplayer.prototype = {
   player:null,
   playNow:'',
   timer:null,
@@ -34,6 +39,7 @@ _modplayer.prototype = {
   thisLoop:null,
   initialize:function()
   {
+    this.fpsOut = $('#fps');
 
     this.u = this.getURLParameter();
     this.u = decodeURIComponent(this.u);
@@ -86,11 +92,11 @@ _modplayer.prototype = {
       switch($(this).data('action'))
       {
         case "FX":
-          if($('#modpattern, #canvas, #modsamples').hasClass('FX'))
+          if($('#modpattern, #canvas').hasClass('FX'))
           {
-            $('#modpattern, #canvas, #modsamples').removeClass('FX');
+            $('#modpattern, #canvas').removeClass('FX');
           }else{
-            $('#modpattern, #canvas, #modsamples').addClass('FX');
+            $('#modpattern, #canvas').addClass('FX');
           }
           break;
         case "patterns":  scope.display.patterns = bool; break;
@@ -267,7 +273,7 @@ _modplayer.prototype = {
         pd+="</span>\n";
       }
       for(i=0; i<24; i++) pd+="\n";
-      pdata+=pd+"</div>";
+        pdata+=pd+"</div>";
     }
     $("#modpattern").html(pdata);
   },
@@ -298,7 +304,7 @@ _modplayer.prototype = {
   },
   viewFPS:function()
   {
-    fpsOut.innerHTML = this.fps + " fps";
+    this.fpsOut.html(this.fps + " fps");
     setTimeout($.proxy(this.viewFPS, this), 400);
   },
   loop:function()
@@ -335,10 +341,10 @@ _modplayer.prototype = {
 
     if(this.display.patterns)
     {
-      document.getElementById('pos').innerHTML = dec(mod.position);
-      document.getElementById('speed').innerHTML = mod.speed;
-      document.getElementById('bpm').innerHTML = mod.bpm;
-      document.getElementById('row').innerHTML = dec(mod.row);
+      document.getElementById('pos').innerHTML    = dec(mod.position);
+      document.getElementById('speed').innerHTML  = mod.speed;
+      document.getElementById('bpm').innerHTML    = mod.bpm;
+      document.getElementById('row').innerHTML    = dec(mod.row);
 
       if (this.oldpos != mod.position) {
         $(".currentpattern").removeClass("currentpattern");
@@ -365,17 +371,8 @@ window.requestAnimationFrame = (function(){
     };
 })();
 
-var modplayer;
-
-$(window).on('hashchange',function(){
-  var u = modplayer.getURLParameter();
-  if(!modplayer) modplayer = new _modplayer();
-  modplayer.loadFile(u);
-});
-
-var fpsOut = document.getElementById('fps');
 $('document').ready(function()
 {
-  if(!modplayer) modplayer = new _modplayer();
+  new modplayer();
 });
 

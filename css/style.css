@@ -13,6 +13,7 @@ h1{
 }
 
 #modsamples {
+    background:#f5f5f5;
     white-space: pre;
     font-family: monospace;
     font-size: 14px;
@@ -22,6 +23,7 @@ h1{
     margin-top:40px;
     min-height: 500px;
     max-height: 500px;
+    border-radius: 3px;
 }
 #modsamples span{
     width:100%;
