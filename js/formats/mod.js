@@ -1,7 +1,6 @@
 Protracker.prototype.parseMOD = function()
 {
-  var i,j;
-  this.vu=[];
+  this.vu=new Array();
   for(i=0;i<this.channels;i++) this.vu[i]=0.0;
 
   i=0;
@@ -40,8 +39,8 @@ Protracker.prototype.parseMOD = function()
   this.patterns+=1;
   var patlen=4*64*this.channels;
 
-  this.pattern=[];
-  this.note=[];
+  this.pattern=new Array();
+  this.note=new Array();
   for(i=0;i<this.patterns;i++) {
     this.pattern[i]=new Uint8Array(patlen);
     this.note[i]=new Uint8Array(this.channels*64);
@@ -70,12 +69,15 @@ Protracker.prototype.parseMOD = function()
     sst+=this.sample[i].length;
   }
 
+  if (this.context) {
+    this.lowpassNode.frequency.value=28867;
+    this.filter=false;
+  }
+
   this.ready=true;
   this.loading=false;
   this.buffer=0;
 
-  if (this.context) this.lowpassNode.frequency.value=28867;
-
   this.onReady();
   return true;
-};
+}
