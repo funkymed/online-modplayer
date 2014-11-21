@@ -1,6 +1,5 @@
 Protracker.prototype.parseMOD = function()
 {
-  console.log('Parse PROTRACKER file');
   var i,j;
   this.vu=[];
   for(i=0;i<this.channels;i++) this.vu[i]=0.0;

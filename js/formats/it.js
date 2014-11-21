@@ -1,6 +1,7 @@
 Protracker.prototype.parseIT = function()
 {
   console.log('Parse IMPULSE TRACKER file');
+  console.log('unfinished');
   var i,j,d;
 
   if (!this.buffer) return false;

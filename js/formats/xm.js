@@ -1,6 +1,7 @@
 Protracker.prototype.parseXM = function()
 {
   console.log('Parse FT2 file');
+  console.log('unfinished');
   this.stop();
   var i,j,d;
 
