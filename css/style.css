@@ -161,9 +161,9 @@ h1{
 {
     border-radius: 4px;
     border: 1px #FFF solid;
-    box-shadow: 0 0 15px #888;
-    background: #666;
-    background: rgb(69,72,77);
+    box-shadow: 0 0 15px;
+    /*background: #666;
+    background: rgb(69,72,77);*/
     text-shadow: 0 0 2px black;
     box-shadow: inset 0 0 15px #000, 0 0 15px #888;
 
@@ -215,11 +215,11 @@ h1{
 
 .insetText{
     font-family: Lucida Grande;
-    background-color: #AAA;
+    /*background-color: #AAA;*/
     -webkit-background-clip:text;
     -moz-background-clip: text;
     background-clip: text;
-    color: transparent;
+    /*color: transparent;*/
     text-shadow: rgba(255,255,255,0.5) 0px 2px 2px;
 }
 
