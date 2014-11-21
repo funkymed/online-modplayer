@@ -158,7 +158,7 @@ Protracker.prototype.createContext = function()
 
   // mixer
   //this.mixerNode=this.context.createJavaScriptNode(this.bufferlen, 1, 2);
-  this.mixerNode=this.context.createScriptProcessor(this.bufferlen, 1, 2);
+  this.mixerNode = this.context.createScriptProcessor(this.bufferlen, 1, 2);
   this.mixerNode.module = this;
   this.mixerNode.onaudioprocess = Protracker.prototype.mix;
 
@@ -496,8 +496,7 @@ Protracker.prototype.advance=function(mod) {
 Protracker.prototype.mix = function(ape,b) {
 
   var f, p, pp, n, nn;
-  //console.log(this.module)
-  var mod=this.module;
+  var mod=ape.originalTarget.module;
   var outp=[];
 
   var bufs=[ape.outputBuffer.getChannelData(0), ape.outputBuffer.getChannelData(1)];
