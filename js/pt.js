@@ -157,7 +157,8 @@ Protracker.prototype.createContext = function()
   this.lowpassNode.frequency.value=28867;
 
   // mixer
-  this.mixerNode=this.context.createJavaScriptNode(this.bufferlen, 1, 2);
+  //this.mixerNode=this.context.createJavaScriptNode(this.bufferlen, 1, 2);
+  this.mixerNode=this.context.createScriptProcessor(this.bufferlen, 1, 2);
   this.mixerNode.module = this;
   this.mixerNode.onaudioprocess = Protracker.prototype.mix;
 
@@ -437,8 +438,6 @@ Protracker.prototype.parse = function()
   }else{
     return this.parseMOD();
   }
-
-  return false;
 
 };
 
