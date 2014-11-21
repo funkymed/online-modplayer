@@ -215,12 +215,18 @@ h1{
 
 .insetText{
     font-family: Lucida Grande;
-    /*background-color: #AAA;*/
     -webkit-background-clip:text;
     -moz-background-clip: text;
     background-clip: text;
-    /*color: transparent;*/
+    color:#AAA;
     text-shadow: rgba(255,255,255,0.5) 0px 2px 2px;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .insetText{
+        background-color: #AAA;
+        color: transparent;
+    }
 }
 
 .mandarine{
