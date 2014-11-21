@@ -75,10 +75,10 @@ function Protracker()
   this.buffer=0;
   this.mixerNode=0;
   this.paused=false;
-  this.repeat=false;
-  this.filter=false;
+  this.repeat=true;
+  this.filter=true;
 
-  this.separation=1;
+  this.separation=0; // set stereo separation mode (0=paula, 1=betterpaula (60/40), 2=mono)
   this.palclock=true;
   this.amiga500=true;
 

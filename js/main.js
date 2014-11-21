@@ -23,6 +23,7 @@ modplayer.prototype = {
   timer:null,
   oldpos:-1,
   init:false,
+  audiomix:0,
   display:{
     analyzer:true,
     samples:true,
@@ -102,6 +103,15 @@ modplayer.prototype = {
         case "patterns":  scope.display.patterns = bool; break;
         case "samples":   scope.display.samples = bool; break;
         case "analyzer":  scope.display.analyzer = bool; break;
+        case "amiga":
+          scope.setAudioMix(this,0);
+          break;
+        case "mix6040":
+          scope.setAudioMix(this,1);
+          break;
+        case "mono":
+          scope.setAudioMix(this,2);
+          break;
       }
     });
 
@@ -120,7 +130,18 @@ modplayer.prototype = {
     this.initupload();
   },
   getURLParameter:function () {
-    return (location.href.split('#')[1]) ? 'mods/'+location.href.split('#')[1] : '';
+    return (location.href.split('#')[1]) ? 'tmp/'+location.href.split('#')[1] : '';
+  },
+  setAudioMix:function(_this, mix)
+  {
+    this.audiomix = mix;
+
+    if(_this)
+    {
+      $('.mixaudio a').removeClass('active');
+      $(_this).addClass('active');
+    }
+    this.player.setseparation(this.audiomix);
   },
   uploadedmod:function()
   {
@@ -137,9 +158,9 @@ modplayer.prototype = {
         {
           if(this.playNow==list[i])
           {
-            _h+='<li class="active"><a href="#" data-action="load" data-filename="'+list[i]+'"><i class="icon-play"></i>'+list[i].replace('mods/','')+'</a></li>';
+            _h+='<li class="active"><a href="#" data-action="load" data-filename="'+list[i]+'"><i class="icon-play"></i>'+list[i].replace('tmp/','')+'</a></li>';
           }else{
-            _h+='<li><a href="#" data-action="load" data-filename="'+list[i]+'">'+list[i].replace('mods/','')+'</a></li>';
+            _h+='<li><a href="#" data-action="load" data-filename="'+list[i]+'">'+list[i].replace('tmp/','')+'</a></li>';
           }
         }
 
@@ -167,8 +188,8 @@ modplayer.prototype = {
               if($(this).data('filename')==scope.u)
               {
                 $(this).click();
-                var f = scope.u.replace('mods/','');
-                scope.loadFile('mods/'+encodeURIComponent(f));
+                var f = scope.u.replace('tmp/','');
+                scope.loadFile('tmp/'+encodeURIComponent(f));
               }
             });
 
@@ -221,7 +242,7 @@ modplayer.prototype = {
   },
   load:function(url)
   {
-    document.location.hash = "#"+encodeURIComponent(url.replace('mods/',''));
+    document.location.hash = "#"+encodeURIComponent(url.replace('tmp/',''));
   },
   loadFile:function(url)
   {
@@ -281,7 +302,7 @@ modplayer.prototype = {
   onPlay:function()
   {
     this.isplaying = true;
-
+    this.setAudioMix(null,this.audiomix);
   },
   onProgress:function(evt)
   {

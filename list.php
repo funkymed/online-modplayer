@@ -18,7 +18,7 @@ function getDirectoryList ($directory)
     // done!
     return $results;
   }
-$list = getDirectoryList('mods');
-//sort($list);
-$list = array_reverse($list);
+$list = getDirectoryList('tmp');
+sort($list);
+//$list = array_reverse($list);
 echo json_encode($list);
