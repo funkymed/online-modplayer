@@ -493,10 +493,11 @@ Protracker.prototype.advance=function(mod) {
 };
 
 // mix an audio buffer with data
-Protracker.prototype.mix = function(ape) {
+Protracker.prototype.mix = function(ape,b) {
 
   var f, p, pp, n, nn;
-  var mod=ape.srcElement.module;
+  //console.log(this.module)
+  var mod=this.module;
   var outp=[];
 
   var bufs=[ape.outputBuffer.getChannelData(0), ape.outputBuffer.getChannelData(1)];
