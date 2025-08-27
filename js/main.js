@@ -1,0 +1,460 @@
+/**
+ * Modplayer By Cyril Pereira aka med^mandarine
+ * cyril.pereira@gmail.com
+ * with the player routine Protracker Javascript by Jani Halme
+ * added some improvement, like visualizer, requestanimation, and transport detection
+ * and this object to control everything
+ *  - uploader
+ *  - controler
+ *  - design
+ */
+var modplayer = function () {
+  this.initialize();
+  var scope = this;
+  $(window).on("hashchange", function () {
+    var u = scope.getURLParameter();
+    scope.loadFile(u);
+  });
+};
+
+modplayer.prototype = {
+  player: null,
+  playNow: "",
+  timer: null,
+  oldpos: -1,
+  init: false,
+  audiomix: 0,
+  display: {
+    analyzer: true,
+    samples: true,
+    patterns: true,
+  },
+  currentData: {
+    sample: null,
+  },
+  u: "",
+  isplaying: false,
+  filterStrength: 20,
+  frameTime: 0,
+  lastLoop: new Date(),
+  thisLoop: null,
+  initialize: function () {
+    this.u = this.getURLParameter();
+    this.u = decodeURIComponent(this.u);
+
+    $("#loader").hide();
+    $("#progressbar").hide();
+
+    this.player = new Protracker();
+    this.search = "";
+
+    this.player.setautostart(true);
+    this.player.setseparation(true);
+    this.player.setamigatype(true);
+
+    this.player.onReady = $.proxy(this.onReady, this);
+    this.player.onPlay = $.proxy(this.onPlay, this);
+    this.player.onStop = $.proxy(this.onStop, this);
+    this.player.onProgress = $.proxy(this.onProgress, this);
+
+    var scope = this;
+    var timeoutSearch = 0;
+
+    $("#search").on("input", function (e) {
+      e.preventDefault();
+
+      if (timeoutSearch) {
+        clearTimeout(timeoutSearch);
+      }
+      timeoutSearch = setTimeout(function () {
+        if (e.target.value.length >= 3) {
+          this.search = e.target.value;
+          scope.uploadedmod(this.search);
+        }
+        if (e.target.value.length === 0) {
+          scope.uploadedmod("");
+        }
+      }, 800);
+    });
+
+    $(".btnrefresh").on("click", function (e) {
+      e.preventDefault();
+      scope.uploadedmod();
+    });
+    $(".files a,.controls a").on("click", function (e) {
+      e.preventDefault();
+      switch ($(this).data("action")) {
+        case "play":
+          scope.player.play();
+          break;
+        case "pause":
+          scope.player.pause();
+          break;
+        case "stop":
+          scope.player.stop();
+          break;
+        case "upload":
+          break;
+      }
+    });
+
+    $(".options a").on("click", function (e) {
+      e.preventDefault();
+      var i = $(this).find("i");
+      if (i.hasClass("icon-eye-open")) {
+        i.removeClass("icon-eye-open");
+        i.addClass("icon-eye-close");
+      } else {
+        i.removeClass("icon-eye-close");
+        i.addClass("icon-eye-open");
+      }
+      var bool = i.hasClass("icon-eye-open") ? true : false;
+      switch ($(this).data("action")) {
+        case "FX":
+          if ($("#modpattern, #canvas").hasClass("FX")) {
+            $("#modpattern, #canvas").removeClass("FX");
+          } else {
+            $("#modpattern, #canvas").addClass("FX");
+          }
+          break;
+        case "patterns":
+          scope.display.patterns = bool;
+          break;
+        case "samples":
+          scope.display.samples = bool;
+          break;
+        case "analyzer":
+          scope.display.analyzer = bool;
+          break;
+        case "amiga":
+          scope.setAudioMix(this, 0);
+          break;
+        case "mix6040":
+          scope.setAudioMix(this, 1);
+          break;
+        case "mono":
+          scope.setAudioMix(this, 2);
+          break;
+      }
+    });
+
+    this.loop();
+
+    //Vumeter
+    this.canvas = document.getElementById("canvas");
+    this.canvas.width = $("#modpattern").width();
+    this.canvas.height = 120;
+
+    this.ctx = canvas.getContext("2d");
+
+    this.select();
+    this.uploadedmod();
+    this.initupload();
+  },
+  getURLParameter: function () {
+    return location.href.split("#")[1]
+      ? "tmp/" + location.href.split("#")[1]
+      : "";
+  },
+  setAudioMix: function (_this, mix) {
+    this.audiomix = mix;
+
+    if (_this) {
+      $(".mixaudio a").removeClass("active");
+      $(_this).addClass("active");
+    }
+
+    this.player.setseparation(this.audiomix);
+  },
+  uploadedmod: function (filter) {
+    $("#loader").show();
+    var scope = this;
+    $.ajax(`list.php?filter=${filter ? filter : ""}`, {
+      complete: function (e) {
+        $("#loader").hide();
+        var list = JSON.parse(e.responseText);
+        var _h = '<li class="nav-header">Uploaded</li>';
+        for (var i in list) {
+          if (this.playNow == list[i]) {
+            _h +=
+              '<li class="active"><a href="#" data-action="load" data-filename="' +
+              list[i] +
+              '"><i class="icon-play"></i>' +
+              list[i].replace("tmp/", "") +
+              "</a></li>";
+          } else {
+            _h +=
+              '<li><a href="#" data-action="load" data-filename="' +
+              list[i] +
+              '">' +
+              list[i].replace("tmp/", "") +
+              "</a></li>";
+          }
+        }
+
+        $(".uploaded").html(_h);
+
+        $(".uploaded a").off("click");
+
+        $(".uploaded a").on("click", $.proxy(scope.selectTune, scope));
+
+        if (!this.init) {
+          setTimeout(function () {
+            if ($(".uploaded .active").length) {
+              $(".uploaded").animate(
+                {
+                  scrollTop:
+                    $(".uploaded .active").position().top -
+                    $(".uploaded").position().top,
+                  easing: "easeInOut",
+                },
+                100
+              );
+              // $(".uploaded").scrollTop(
+              //   $(".uploaded .active").position().top -
+              //     $(".uploaded").position().top
+              // );
+            }
+          }, 1000);
+
+          if (this.u != "") {
+            $(".uploaded a").each(function () {
+              if ($(this).data("filename") == scope.u) {
+                $(this).click();
+                var f = scope.u.replace("tmp/", "");
+                scope.loadFile("tmp/" + encodeURIComponent(f));
+              }
+            });
+          } else {
+            var rand = Math.floor(Math.random() * $(".uploaded a").length);
+            var item = $(".uploaded a").eq(rand);
+            item.click();
+          }
+          this.init = true;
+        }
+      },
+    });
+  },
+  selectTune: function (e) {
+    e.preventDefault();
+
+    $(e.target).blur();
+    this.select(e.target);
+    this.load($(e.target).data("filename"));
+  },
+  initupload: function (n) {
+    var scope = this;
+    $("#fileupload").fileupload({
+      url: "upload.php",
+      dataType: "json",
+      acceptFileTypes: /(\.|\/)(mod)$/i,
+      add: function (e, data) {
+        scope.select();
+        $("#loader").show();
+        data.submit();
+      },
+      done: function (e, data) {
+        $("#loader").hide();
+        scope.load(data._response.result.name);
+        scope.uploadedmod();
+      },
+    });
+  },
+  select: function (n) {
+    $(".uploaded li,.files li").removeClass("active");
+    $(".uploaded a,.files a").find("i").remove();
+    if (n) {
+      $(n).parent().addClass("active");
+      $(n).prepend('<i class="icon-play"></i>');
+    }
+  },
+  load: function (url) {
+    document.location.hash = "#" + encodeURIComponent(url.replace("tmp/", ""));
+  },
+  loadFile: function (url) {
+    $("#loader").show();
+    this.oldpos = -1;
+    this.player.stop();
+    this.playNow = url;
+    this.player.load(url);
+    $("#progressbar .bar").css("width", 0);
+    $("#progressbar").fadeIn();
+  },
+  onReady: function (title) {
+    setTimeout(function () {
+      $("#loader").hide();
+      $("#progressbar").fadeOut(100);
+    }, 800);
+
+    var size = 14;
+
+    if (this.player.channels == 8) {
+      size = 12;
+    } else if (this.player.channels == 10) {
+      size = 10;
+    }
+
+    $("#modpattern").css("font-size", size + "px");
+
+    $("#modtimer .songlen").text(dec(this.player.songlen));
+
+    var _html = "";
+    var pdata = "";
+    console.log(title);
+
+    $("title").html("Modplayer online in javascript : " + title);
+    for (var i = 0; i < 31; i++) {
+      _html +=
+        '<span class="samplelist" id="sample' +
+        hb(i + 1) +
+        '">' +
+        hb(i + 1) +
+        " " +
+        pad(this.player.sample[i].name, 22) +
+        "</span>\n";
+    }
+
+    $("#title").text(`Now playing : ${title}`);
+
+    $("#modsamples").html(_html);
+    for (var p = 0; p < this.player.patterns; p++) {
+      var pp,
+        pd = '<div class="patterndata pattern' + hb(p) + '">';
+      for (i = 0; i < 12; i++) pd += "\n";
+      for (i = 0; i < 64; i++) {
+        pp = i * 4 * this.player.channels;
+        pd += '<span class="patternrow">' + dec(i) + "|";
+        for (var c = 0; c < this.player.channels; c++) {
+          pd += notef(
+            this.player.note[p][i * this.player.channels + c],
+            (this.player.pattern[p][pp + 0] & 0xf0) |
+              (this.player.pattern[p][pp + 2] >> 4),
+            this.player.pattern[p][pp + 2] & 0x0f,
+            this.player.pattern[p][pp + 3],
+            this.player.channels
+          );
+          pp += 4;
+        }
+        pd += "</span>\n";
+      }
+      for (i = 0; i < 24; i++) pd += "\n";
+      pdata += pd + "</div>";
+    }
+    $("#modpattern").html(pdata);
+  },
+  onPlay: function () {
+    this.isplaying = true;
+    this.setAudioMix(null, this.audiomix);
+  },
+  onProgress: function (evt) {
+    if (evt.lengthComputable) {
+      $("#progressbar").fadeIn(100);
+      var percentComplete = (evt.loaded / evt.total) * 100;
+      $("#progressbar .bar").css("width", percentComplete + "%");
+    }
+  },
+  onStop: function () {
+    this.isplaying = false;
+  },
+  loop: function () {
+    requestAnimationFrame($.proxy(this.loop, this));
+
+    if (!this.isplaying) return;
+
+    if (this.player.paused) return;
+
+    var c,
+      mod = this.player;
+
+    if (this.display.analyzer) {
+      this.player.getAnalyser(this.ctx, this.canvas.width, this.canvas.height);
+    }
+
+    if (this.display.samples) {
+      $("#modsamples").children().removeClass("activesample");
+      c = mod.channels;
+      while (c--) {
+        var s = mod.channel[c].sample + 1;
+        if (mod.channel[c].noteon) {
+          $("#sample" + hb(s)).addClass("activesample");
+        }
+      }
+    }
+
+    if (this.display.patterns) {
+      document.getElementById("pos").innerHTML = dec(mod.position);
+      document.getElementById("speed").innerHTML = mod.speed;
+      document.getElementById("bpm").innerHTML = mod.bpm;
+      document.getElementById("row").innerHTML = dec(mod.row);
+
+      if (this.oldpos != mod.position) {
+        $(".currentpattern").removeClass("currentpattern");
+        $(".pattern" + hb(mod.patterntable[mod.position])).addClass(
+          "currentpattern"
+        );
+      }
+
+      $(".currentrow").removeClass("currentrow");
+      $(".currentpattern .patternrow:eq(" + mod.row + ")").addClass(
+        "currentrow"
+      );
+      $(".currentpattern").scrollTop(mod.row * 16);
+
+      this.oldpos = mod.position;
+    }
+  },
+};
+
+function updateFps() {
+  var lastCalledTime;
+  var counter = 0;
+  var fpsArray = [];
+  var phase = 0;
+
+  function update(timestamp) {
+    var fps;
+
+    if (!lastCalledTime) {
+      lastCalledTime = new Date().getTime();
+      fps = 0;
+    }
+
+    var delta = (new Date().getTime() - lastCalledTime) / 1000;
+    lastCalledTime = new Date().getTime();
+    fps = Math.ceil(1 / delta);
+
+    if (counter >= 60) {
+      var sum = fpsArray.reduce(function (a, b) {
+        return a + b;
+      });
+      var average = Math.ceil(sum / fpsArray.length);
+      console.log(average);
+      counter = 0;
+    } else {
+      if (fps !== Infinity) {
+        fpsArray.push(fps);
+      }
+
+      counter++;
+    }
+    phase++;
+    if (phase % 30 === 0) {
+      $("#fps").text(`${Math.round(fps)} fps`);
+    }
+
+    window.requestAnimationFrame(update);
+  }
+
+  window.requestAnimationFrame(update);
+}
+
+$("document").ready(function () {
+  new modplayer();
+  const h = $(window).height();
+  const maxH = 850;
+  if (h > maxH) {
+    var zoomfactor = h / maxH;
+    $("html, body").css("zoom", zoomfactor);
+  }
+  updateFps();
+});
